@@ -17,14 +17,25 @@ app.listen(port, (err) => {
 });
 
 // Create PostgreSQL pool
-const pool = new Pool({
+/*const pool = new Pool({
   user: "postgres",
   password: "Kamikaze.10",
   database: "student_db",
   host: "localhost",
   port: 5432,
   max: 10,
+});*/
+
+const pool = new Pool({
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  max: 10,
+  ssl: { rejectUnauthorized: false } // needed for Render Postgres
 });
+
 
 // Connect to PostgreSQL
 pool.connect((err, client, release) => {
