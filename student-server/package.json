@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "start":"nodemon server.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "start": "nodemon server.js",
+  "postinstall": "cd ../student-web && npm install && npm run build && xcopy dist\\* public /E /Y",
+  "test": "echo \"Error: no test specified\" && exit 1"
+}
+,
   "keywords": [],
   "author": "",
   "license": "ISC",
