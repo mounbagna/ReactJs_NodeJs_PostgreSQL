@@ -1,7 +1,9 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const { Pool } = require("pg"); // Destructure Pool from pg
+const { Pool } = require("pg");
+import path from "path";
+import { fileURLToPath } from "url";
 
 const app = express();
 const port = process.env.PORT || 3005;
@@ -128,10 +130,14 @@ app.post("/login", async (req, res) => {
   });
 });
 
-const path = require("path");
 
-app.use(express.static(path.join(__dirname, "public")));
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+app.use(express.static(path.join(__dirname, "../student-web/dist")));
+
+app.get("/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../student-web/dist/index.html"));
 });
+
