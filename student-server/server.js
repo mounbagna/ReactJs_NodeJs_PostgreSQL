@@ -127,3 +127,11 @@ app.post("/login", async (req, res) => {
     return res.status(200).json({ user: result.rows[0] });
   });
 });
+
+const path = require("path");
+
+app.use(express.static(path.join(__dirname, "public")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
