@@ -199,6 +199,6 @@ app.listen(port, (err) => {
 // Serve static React build
 app.use(express.static(path.join(__dirname, "../student-web/dist")));
 
-app.get("*", (req, res) => {
+app.get("/*", (req, res) => {
   res.sendFile(path.join(__dirname, "../student-web/dist", "index.html"));
 });
