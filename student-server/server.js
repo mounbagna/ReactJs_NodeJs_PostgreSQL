@@ -13,12 +13,12 @@ const app = express();
 const port = process.env.PORT || 3005;
 
 // Middleware
-app.use(cors({ origin: process.env.FRONTEND_URL || "*" }));
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // PostgreSQL pool for Render
-const pool = new Pool({
+/*const pool = new Pool({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
@@ -26,25 +26,25 @@ const pool = new Pool({
   port: process.env.DB_PORT,
   ssl: { rejectUnauthorized: false },
   max: 10
-});
+});*/
 
-// Connect to PostgreSQL
-pool.connect((err) => {
-  if (err) throw err
-  console.log(`The database is connected successfully`);
-});
 
 
 
 //PostgreSQL pool
-/*const pool = new Pool({
+const pool = new Pool({
   user: "postgres",
   password: "Kamikaze.10",
   database: "student_db",
   host: "localhost",
   port: 5432,
   max: 10,
-});*/
+});
+// Connect to PostgreSQL
+pool.connect((err) => {
+  if (err) throw err
+  console.log(`The database is connected successfully`);
+});
 
 
 
@@ -190,15 +190,9 @@ app.post("/login", async (req, res) => {
   return res.status(200).json({ message: "Login Successfully", user });
 });
 
-// Start server
+// Start server LAST
 app.listen(port, (err) => {
   if (err) throw err;
   console.log(`The server is listening on port ${port}`);
 });
 
-// Serve static React build
-app.use(express.static(path.join(__dirname, "../student-web/dist")));
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../student-web/dist", "index.html"));
-});
