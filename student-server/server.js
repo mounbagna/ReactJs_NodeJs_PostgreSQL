@@ -13,27 +13,28 @@ const app = express();
 const port = process.env.PORT || 3005;
 
 // Middleware
-app.use(cors({
-  origin: process.env.FRONTEND_URL || "*" // allow your frontend URL
-}));
+app.use(cors({ origin: process.env.FRONTEND_URL || "*" }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// PostgreSQL pool for Render
 const pool = new Pool({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
-  max: 10,
-  ssl: { rejectUnauthorized: false } // needed for Render Postgres
+  ssl: { rejectUnauthorized: false },
+  max: 10
 });
 
-// Start server
-app.listen(port, (err) => {
-  if (err) throw err;
-  console.log(`The server is listening on port ${port}`);
+// Connect to PostgreSQL
+pool.connect((err) => {
+  if (err) throw err
+  console.log(`The database is connected successfully`);
 });
+
+
 
 //PostgreSQL pool
 /*const pool = new Pool({
@@ -45,11 +46,7 @@ app.listen(port, (err) => {
   max: 10,
 });*/
 
-// Connect to PostgreSQL
-pool.connect((err) => {
-  if (err) throw err
-  console.log(`The database is connected successfully`);
-});
+
 
 //------------------------Endpoints-----------------------
 
@@ -192,8 +189,9 @@ app.post("/login", async (req, res) => {
   delete user.password;
   return res.status(200).json({ message: "Login Successfully", user });
 });
-// Serve React build (if you deploy frontend in same repo)
-app.use(express.static(path.join(__dirname, "../client/build")));
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/build", "index.html"));
+
+// Start server
+app.listen(port, (err) => {
+  if (err) throw err;
+  console.log(`The server is listening on port ${port}`);
 });
