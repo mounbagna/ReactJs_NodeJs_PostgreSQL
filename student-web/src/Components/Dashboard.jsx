@@ -83,7 +83,7 @@ function Dashboard({ user }) {
     const confirmDelete = window.confirm("Do you really want to delete?");
     if (!confirmDelete) return;
     try {
-      await axios.delete(`${process.env.REACT_APP_API_URL}/students/${studentId}`);
+      await axios.delete(`http://localhost:3005/students/${studentId}`);
       getAllStudents();
     } catch (err) {
       console.error(err);
