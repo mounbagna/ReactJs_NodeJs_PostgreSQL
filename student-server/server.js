@@ -113,7 +113,7 @@ app.post("/register", async(req, res) => {
     const user = result.rows[0];
   
   //send verification email
-  const verificationUrl = `${import.meta.env.REACT_APP_API_URL}/students/${user.studentId}/verify/${token}`;
+  const verificationUrl = `${process.env.REACT_APP_API_URL}/students/${user.studentId}/verify/${token}`;
   await sendEmail(user.email, "Verification email",`Click to verify: ${verificationUrl}`)
 
   res.status(201).json({message: "Registration successfully. Check your email to verify"})
