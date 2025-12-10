@@ -24,28 +24,15 @@ const pool = new Pool({
   database: process.env.DB_NAME,
   host: process.env.DB_HOST,
   port: process.env.DB_PORT,
-  ssl: { rejectUnauthorized: false },
-  max: 10
+  max: 10,
+  ssl: process.env.DB_HOST !== "localhost" ? { rejectUnauthorized: false } : false,
 });
 
-
-
-
-//PostgreSQL pool
-{/*const pool = new Pool({
-  user: "postgres",
-  password: "Kamikaze.10",
-  database: "student_db",
-  host: "localhost",
-  port: 5432,
-  max: 10,
-});*/}
 // Connect to PostgreSQL
 pool.connect((err) => {
   if (err) throw err
   console.log(`The database is connected successfully`);
 });
-
 
 
 //------------------------Endpoints-----------------------
@@ -113,7 +100,7 @@ app.post("/register", async(req, res) => {
     const user = result.rows[0];
   
   //send verification email
-  const verificationUrl = `${process.env.REACT_APP_API_URL}/students/${user.studentId}/verify/${token}`;
+  const verificationUrl = `http://localhost:3005/students/students/${user.studentId}/verify/${token}`;
   await sendEmail(user.email, "Verification email",`Click to verify: ${verificationUrl}`)
 
   res.status(201).json({message: "Registration successfully. Check your email to verify"})
