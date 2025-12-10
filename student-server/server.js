@@ -18,7 +18,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // PostgreSQL pool for Render
-/*const pool = new Pool({
+const pool = new Pool({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
@@ -26,20 +26,20 @@ app.use(bodyParser.urlencoded({ extended: true }));
   port: process.env.DB_PORT,
   ssl: { rejectUnauthorized: false },
   max: 10
-});*/
+});
 
 
 
 
 //PostgreSQL pool
-const pool = new Pool({
+{/*const pool = new Pool({
   user: "postgres",
   password: "Kamikaze.10",
   database: "student_db",
   host: "localhost",
   port: 5432,
   max: 10,
-});
+});*/}
 // Connect to PostgreSQL
 pool.connect((err) => {
   if (err) throw err
