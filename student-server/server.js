@@ -5,6 +5,7 @@ const { Pool } = require("pg");
 const bcrypt = require("bcrypt")
 const crypto  = require("crypto")
 const sendEmail = require("./sendEmail")
+const path = require("path");
 require('dotenv').config();
 
 
@@ -18,15 +19,15 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// PostgreSQL pool using environment variables
 const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false } // required for Render managed DB
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT,
+  max: 10,
+  ssl: { rejectUnauthorized: false } // needed for Render Postgres
 });
-
-app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
 
 // Start server
 app.listen(port, (err) => {
@@ -190,4 +191,9 @@ app.post("/login", async (req, res) => {
 
   delete user.password;
   return res.status(200).json({ message: "Login Successfully", user });
+});
+// Serve React build (if you deploy frontend in same repo)
+app.use(express.static(path.join(__dirname, "../client/build")));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/build", "index.html"));
 });
