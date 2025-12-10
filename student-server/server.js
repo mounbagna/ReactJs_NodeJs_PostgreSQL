@@ -11,6 +11,19 @@ require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 3005;
 
+// Middleware
+app.use(cors({
+  origin: process.env.FRONTEND_URL || "*" // allow your frontend URL
+}));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
+// PostgreSQL pool using environment variables
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: { rejectUnauthorized: false } // required for Render managed DB
+});
+
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -22,14 +35,14 @@ app.listen(port, (err) => {
 });
 
 //PostgreSQL pool
-const pool = new Pool({
+/*const pool = new Pool({
   user: "postgres",
   password: "Kamikaze.10",
   database: "student_db",
   host: "localhost",
   port: 5432,
   max: 10,
-});
+});*/
 
 // Connect to PostgreSQL
 pool.connect((err) => {
