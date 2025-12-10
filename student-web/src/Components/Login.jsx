@@ -19,7 +19,8 @@ function Login({ setLoggedInUser }) {
       return;
     }
     try {
-      const res = await axios.post("http://localhost:3005/login", credentials);
+      //const res = await axios.post("http://localhost:3005/login", credentials);
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/login`, credentials);
       setLoggedInUser(res.data.user);
       setErrorMsg("");
       navigate("/dashboard");

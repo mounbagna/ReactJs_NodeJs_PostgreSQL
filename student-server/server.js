@@ -113,7 +113,7 @@ app.post("/register", async(req, res) => {
     const user = result.rows[0];
   
   //send verification email
-  const verificationUrl = `http://localhost:5173/students/${user.studentId}/verify/${token}`;
+  const verificationUrl = `${process.env.FRONTEND_URL}/students/${user.studentId}/verify/${token}`;
   await sendEmail(user.email, "Verification email",`Click to verify: ${verificationUrl}`)
 
   res.status(201).json({message: "Registration successfully. Check your email to verify"})
@@ -194,4 +194,11 @@ app.post("/login", async (req, res) => {
 app.listen(port, (err) => {
   if (err) throw err;
   console.log(`The server is listening on port ${port}`);
+});
+
+// Serve static React build
+app.use(express.static(path.join(__dirname, "../student-web/dist")));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../student-web/dist", "index.html"));
 });

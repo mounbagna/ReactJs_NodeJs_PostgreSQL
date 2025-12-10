@@ -22,7 +22,8 @@ function Dashboard({ user }) {
   };
 
   const getAllStudents = () => {
-    axios.get("http://localhost:3005/students")
+    //axios.get("http://localhost:3005/students")
+    axios.get(`${import.meta.env.VITE_API_URL}/students`)
       .then(res => {
         setStudents(res.data);
         setFilteredStudents(res.data);
@@ -51,9 +52,11 @@ function Dashboard({ user }) {
     }
     try {
       if (studentData.studentId) {
-        await axios.patch(`http://localhost:3005/students/${studentData.studentId}`, studentData);
+        //await axios.patch(`http://localhost:3005/students/${studentData.studentId}`, studentData);
+        await axios.patch(`${import.meta.env.VITE_API_URL}/students/${studentData.studentId}`, studentData);
       } else {
-        await axios.post("http://localhost:3005/students", studentData);
+        //await axios.post("http://localhost:3005/students", studentData);
+        await axios.post(`${import.meta.env.VITE_API_URL}/students`, studentData);
       }
       getAllStudents(); 
       closePopup();     
@@ -80,7 +83,7 @@ function Dashboard({ user }) {
     const confirmDelete = window.confirm("Do you really want to delete?");
     if (!confirmDelete) return;
     try {
-      await axios.delete(`http://localhost:3005/students/${studentId}`);
+      await axios.delete(`${import.meta.env.VITE_API_URL}/students/${studentId}`);
       getAllStudents();
     } catch (err) {
       console.error(err);

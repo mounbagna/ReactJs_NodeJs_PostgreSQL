@@ -22,7 +22,8 @@ function Registration() {
     }
 
     try {
-      await axios.post("http://localhost:3005/register", user);
+      //await axios.post("http://localhost:3005/register", user);
+      await axios.post(`${import.meta.env.VITE_API_URL}/register`, user);
       setSuccessMsg("Successfully registered");
       setUser({ name: "", email: "", password: "" });
       setErrorMsg("");
