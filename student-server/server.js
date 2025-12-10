@@ -1,10 +1,12 @@
-import express from "express";
-import path from "path";
-import { fileURLToPath } from "url";
-import cors from "cors";
-import bodyParser from "body-parser";
-import pkg from "pg";
-const { Pool } = pkg;
+const express = require("express");
+const cors = require("cors")
+const bodyParser = require("body-parser")
+const { Pool } = require("pg");
+const bcrypt = require("bcrypt")
+const crypto  = require("crypto")
+const sendEmail = require("./sendEmail")
+require('dotenv').config();
+
 
 const app = express();
 const port = process.env.PORT || 3005;
@@ -19,25 +21,20 @@ app.listen(port, (err) => {
   console.log(`The server is listening on port ${port}`);
 });
 
+//PostgreSQL pool
 const pool = new Pool({
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
+  user: "postgres",
+  password: "Kamikaze.10",
+  database: "student_db",
+  host: "localhost",
+  port: 5432,
   max: 10,
-  ssl: { rejectUnauthorized: false } 
 });
 
-
 // Connect to PostgreSQL
-pool.connect((err, client, release) => {
-  if (err) {
-    console.error("Error connecting to the database:", err.stack);
-  } else {
-    console.log("Connected to the database successfully");
-    release(); 
-  }
+pool.connect((err) => {
+  if (err) throw err
+  console.log(`The database is connected successfully`);
 });
 
 //------------------------Endpoints-----------------------
@@ -93,41 +90,91 @@ app.delete("/students/:studentId",(req,res)=>{
 })
 
 // Register a student
-app.post("/register", (req, res) => {
+app.post("/register", async(req, res) => {
   const { name, email, password } = req.body;
-  if (!name || !email || !password) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
-  const sql = "INSERT INTO student(name, email, password) VALUES($1, $2, $3) RETURNING *";
-  pool.query(sql, [name, email, password], (err, result) => {
-    if (err) return res.status(500).json(err);
-    return res.status(201).json(result.rows[0]);
-  });
+  const hashedPassword = await bcrypt.hash(password,10)
+  try{
+    const token = crypto.randomBytes(32).toString("hex");
+    const sql = `INSERT INTO student(name, email, password, verified, token, "createdAt")
+             VALUES($1, $2, $3, $4, $5, NOW()) RETURNING *`;
+
+    const result = await pool.query(sql, [name, email, hashedPassword, false, token]);
+    const user = result.rows[0];
+  
+  //send verification email
+  const verificationUrl = `http://localhost:5173/students/${user.studentId}/verify/${token}`;
+  await sendEmail(user.email, "Verification email",`Click to verify: ${verificationUrl}`)
+
+  res.status(201).json({message: "Registration successfully. Check your email to verify"})
+} catch(err){
+  console.error(err)
+  res.status(500).json({message: "Registration failed"})
+}
 });
 
-// Login student
+//Email Verification
+app.get("/students/:studentId/verify/:token", async (req, res) => {
+  const { studentId, token } = req.params;
+
+  try {
+    // Check if student exists
+    const studentResult = await pool.query(
+      `SELECT * FROM student WHERE "studentId" = $1`,
+      [studentId]
+    );
+
+    // ❌ CASE 1: Student does not exist (deleted after 1 min or never existed)
+    if (studentResult.rows.length === 0) {
+      return res.status(410).json({
+        message: "Verification expired or account already deleted."
+      });
+    }
+
+    const student = studentResult.rows[0];
+
+    // Check expiration
+    const createdAt = new Date(student.createdAt);
+    const now = new Date();
+    const diffInMinutes = (now - createdAt) / (1000 * 60);
+
+    // ❌ CASE 3: Token expired → delete account
+    if (diffInMinutes > 1) {
+      await pool.query(
+        `DELETE FROM student WHERE "studentId" = $1`,
+        [studentId]
+      );
+      return res.status(410).json({
+        message: "Verification expired. Account deleted. Please register again."
+      });
+    }
+
+    // ✅ CASE 4: SUCCESS
+    await pool.query(
+      `UPDATE student SET verified = true, token = NULL WHERE "studentId" = $1`,
+      [studentId]
+    );
+
+    res.json({ message: "Email verified successfully." });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+
+//Login student
 app.post("/login", async (req, res) => {
   const { email, password } = req.body;
-  if (!email || !password) {
-    return res.status(400).json({ message: "All fields are required" });
-  }
-  const sql = "SELECT * FROM student WHERE email = $1 AND password = $2";
-  pool.query(sql, [email, password], (err, result) => {
-    if (err) return res.status(500).json(err);
-    if (result.rows.length === 0) {
-      return res.status(401).json({ message: "Invalid email or password" });
-    }
-    return res.status(200).json({ user: result.rows[0] });
-  });
-});
+  const sql = "SELECT * FROM student WHERE email = $1";
+  const result = await pool.query(sql, [email])
 
+  if(result.rows.length===0) return res.status(400).json({message: "The email does not exist in the database"})
 
+  const user = result.rows[0]
+  const isMatch = await bcrypt.compare(password,user.password)
+  if(!isMatch) return res.status(400).json({message: "Incorrect Password"})
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-app.use(express.static(path.join(__dirname, "../student-web/dist")));
-
-app.get("/*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../student-web/dist/index.html"));
+  delete user.password;
+  return res.status(200).json({ message: "Login Successfully", user });
 });

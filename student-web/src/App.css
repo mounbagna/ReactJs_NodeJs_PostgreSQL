@@ -131,21 +131,13 @@
   background-color: rgba(0,90,200);
 }
 
-.err{
-  color:red;
-}
-
-.succ{
-  color:green;
-}
-
 .home-page{
   text-align: center;
   margin-top: 50px;
 }
 
 .main-img{
-  width: 400px;
+  width: 300px;
   border-radius:10px;
 }
 
@@ -161,18 +153,9 @@ button{
 }
 
 .form-container{
-  margin-top: 10px;
-  width: 550px;
   height: 550px;
   border-radius: 5px;
-  background-color: rgba(0,140,255);
-  color: white;
-  border: none;
   cursor: pointer;
-  margin-left: 40px;
-  align-items: center;
-  justify-content: center;
-  
 }
 
 .login-link {
@@ -254,7 +237,7 @@ button{
   background-color: #ffe5e5;
   padding: 8px;
   border-radius: 6px;
-  margin-bottom: 15px;
+  margin-bottom: 25px;
   text-align: center;
   font-size: 14px;
 }
@@ -285,5 +268,98 @@ button{
 }
 
 .login-btn:hover {
-  color: #0056b3;
+  color: #a5aaaf;
 }
+
+/*---------------------Header & Footer------------------------*/
+/*HEADER*/
+.header {
+  width: 100%;
+  background-color: #1a73e8;
+  color: white;
+  padding: 12px 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logo{
+  font-size: 22px;
+  font-weight: bold;
+}
+
+.nav{
+  display: flex;
+  gap: 500px;
+  align-items: center;
+}
+
+.nav-link{
+  text-decoration: none;
+  color: white;
+  font-size: 16px;
+  transition: 0.2s ease;
+  margin-left: 50px;
+}
+
+.nav-link:hover{
+  opacity: 0.8;
+}
+
+.logout-btn{
+  background-color: #d9534f;
+  border: none;
+  color: white;
+  padding: 8px 14px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: 0.2s;
+  margin-left: 1000px;
+}
+
+.logout-btn:hover{
+  background-color: #c9302c;
+}
+
+/*FOOTER*/
+.footer{
+  width: 100%;
+  background-color: #1a73e8;
+  color: white;
+  text-align: center;
+  padding: 15px;
+  margin-top: 50px;
+}
+
+.verify-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 100px;
+  text-align: center;
+}
+
+.success-img {
+  width: 150px;
+  margin-bottom: 20px;
+}
+
+.green-btn {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.green-btn:hover {
+  background-color: #45a049;
+}
+

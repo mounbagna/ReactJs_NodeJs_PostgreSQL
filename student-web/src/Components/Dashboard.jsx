@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import '../App.css';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import Footer from "./Footer"
+import DashboardHeader from '../Headers/DashboardHeader';
 
 function Dashboard({ user }) {
  const navigate = useNavigate();
@@ -9,11 +11,7 @@ function Dashboard({ user }) {
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [students, setStudents] = useState([]);
   const [errorMsg, setErrorMsg] = useState("");
-  const [studentData, setStudentData] = useState({
-    studentId: null,
-    name: "",
-    email: ""
-  });
+  const [studentData, setStudentData] = useState({studentId: null,name: "",email: ""});
 
   const openPopup = () => setIsModalOpen(true);
 
@@ -47,24 +45,18 @@ function Dashboard({ user }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (!studentData.name || !studentData.email) {
       setErrorMsg("ALL FIELDS ARE REQUIRED");
       return;
     }
-
     try {
       if (studentData.studentId) {
-       
         await axios.patch(`http://localhost:3005/students/${studentData.studentId}`, studentData);
       } else {
-        
         await axios.post("http://localhost:3005/students", studentData);
       }
-
       getAllStudents(); 
       closePopup();     
-
     } catch (err) {
       console.error(err);
       setErrorMsg("Something went wrong");
@@ -84,11 +76,9 @@ function Dashboard({ user }) {
   openPopup();
 };
 
-
   const handleDelete = async (studentId) => {
     const confirmDelete = window.confirm("Do you really want to delete?");
     if (!confirmDelete) return;
-
     try {
       await axios.delete(`http://localhost:3005/students/${studentId}`);
       getAllStudents();
@@ -98,6 +88,9 @@ function Dashboard({ user }) {
   };
 
   return (
+    <>
+  
+    <DashboardHeader/>
     <div className='main-content'>
       <h3>Welcome, {user?.name}!</h3>
 
@@ -176,17 +169,14 @@ function Dashboard({ user }) {
           </tbody>
         </table>
 
-        <p className='login-link'>
-        Want to navigate to the homepage?{' '}
-        <button 
-          onClick={() => navigate("/")} 
-          className="login-btn"
-        >
-          Homepage
-        </button>
+        <p className='login-link'>Want to navigate to the homepage?{' '}
+        <button onClick={() => navigate("/")} className="login-btn">Homepage</button>
       </p>
+      
       </div>
+     
     </div>
+    </>
   );
 }
 
