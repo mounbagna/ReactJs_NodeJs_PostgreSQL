@@ -5,7 +5,6 @@ const { Pool } = require("pg");
 const bcrypt = require("bcrypt")
 const crypto  = require("crypto")
 const sendEmail = require("./sendEmail")
-const path = require("path");
 require('dotenv').config();
 
 
@@ -13,12 +12,8 @@ const app = express();
 const port = process.env.PORT || 3005;
 
 // Middleware
-app.use(cors({
-  origin: process.env.FRONTEND_URL || "http://localhost:5173",
-  methods: ["GET", "POST", "PATCH", "DELETE"],
-  credentials: true
-}));
-
+app.use(cors());
+app.use(express.json())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -105,7 +100,7 @@ app.post("/register", async(req, res) => {
     const user = result.rows[0];
   
   //send verification email
-  const verificationUrl = `http://localhost:3005/students/${user.studentId}/verify/${token}`;
+  const verificationUrl = `${FRONTEND_URL}/students/${user.studentId}/verify/${token}`;
   await sendEmail(user.email, "Verification email",`Click to verify: ${verificationUrl}`)
 
   res.status(201).json({message: "Registration successfully. Check your email to verify"})
