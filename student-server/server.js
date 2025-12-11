@@ -10,6 +10,7 @@ require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 3005;
+const API = process.env.REACT_APP_API_URL || "http://localhost:3005";
 
 // Middleware
 app.use(cors());
@@ -100,9 +101,7 @@ app.post("/register", async(req, res) => {
     const user = result.rows[0];
   
   //send verification email
-  const verificationUrl = `http://localhost:5173/students/${user.studentId}/verify/${token}`;
-  //const verificationUrl = `http://localhost:3005/students/${user.studentId}/verify/${token}`;
-  //const verificationUrl = `${FRONTEND_URL}/students/${user.studentId}/verify/${token}`;
+  const verificationUrl = `${API}/${user.studentId}/verify/${token}`;
   await sendEmail(user.email, "Verification email",`Click to verify: ${verificationUrl}`)
 
   res.status(201).json({message: "Registration successfully. Check your email to verify"})
