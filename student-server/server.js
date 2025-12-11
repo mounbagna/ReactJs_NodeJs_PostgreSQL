@@ -10,7 +10,7 @@ require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 3005;
-const API = process.env.REACT_APP_API_URL || "http://localhost:3005";
+const API = (process.env.REACT_APP_API_URL || "http://localhost:3005").replace(/\/+$/, '');
 
 // Middleware
 app.use(cors());

@@ -9,7 +9,7 @@ function Registration() {
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
 
-  const API = process.env.REACT_APP_API_URL || "http://localhost:3005";
+  const API = (process.env.REACT_APP_API_URL || "http://localhost:3005").replace(/\/+$/, '');
   
   const handleChange = (e) => {
     setUser({ ...user, [e.target.id]: e.target.value });

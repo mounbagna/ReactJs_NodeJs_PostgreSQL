@@ -10,7 +10,7 @@ const EmailVerify = () => {
   const [validUrl, setValidUrl] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const API = process.env.REACT_APP_API_URL || "http://localhost:3005";
+  const API = (process.env.REACT_APP_API_URL || "http://localhost:3005").replace(/\/+$/, '');
 
   useEffect(() => {
     const verifyEmailUrl = async () => {
