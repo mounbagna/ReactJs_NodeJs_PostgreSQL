@@ -100,7 +100,7 @@ app.post("/register", async(req, res) => {
     const user = result.rows[0];
   
   //send verification email
-  const verificationUrl = `https://reactjs-nodejs-postgresql-8.onrender.com/students/${user.studentId}/verify/${token}`;
+  const verificationUrl = `http://localhost:5173/students/${user.studentId}/verify/${token}`;
   //const verificationUrl = `http://localhost:3005/students/${user.studentId}/verify/${token}`;
   //const verificationUrl = `${FRONTEND_URL}/students/${user.studentId}/verify/${token}`;
   await sendEmail(user.email, "Verification email",`Click to verify: ${verificationUrl}`)
