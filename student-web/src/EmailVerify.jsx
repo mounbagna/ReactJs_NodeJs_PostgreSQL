@@ -10,11 +10,13 @@ const EmailVerify = () => {
   const [validUrl, setValidUrl] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const API = process.env.REACT_APP_API_URL || "http://localhost:3005";
+
   useEffect(() => {
     const verifyEmailUrl = async () => {
       try {
-        const url = `http://localhost:3005/students/${param.studentId}/verify/${param.token}`;
-        //const url = `${process.env.REACT_APP_API_URL}/students/${param.studentId}/verify/${param.token}`;
+        //const url = `http://localhost:3005/students/${param.studentId}/verify/${param.token}`;
+        const url = `${API}/students/${param.studentId}/verify/${param.token}`;
         const { data } = await axios.get(url);
 
         console.log(data);

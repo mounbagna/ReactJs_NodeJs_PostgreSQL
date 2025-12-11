@@ -7,6 +7,8 @@ function Login({ setLoggedInUser }) {
   const [credentials, setCredentials] = useState({ email: "", password: "" });
   const [errorMsg, setErrorMsg] = useState("");
 
+  const API = process.env.REACT_APP_API_URL || "http://localhost:3005";
+
   const handleChange = (e) => {
     setCredentials({ ...credentials, [e.target.id]: e.target.value });
   };
@@ -19,8 +21,8 @@ function Login({ setLoggedInUser }) {
       return;
     }
     try {
-      const res = await axios.post("http://localhost:3005/login", credentials);
-      //const res = await axios.post(`${process.env.REACT_APP_API_URL}/login`, credentials);
+      //const res = await axios.post("http://localhost:3005/login", credentials);
+      const res = await axios.post(`${API}/login`, credentials);
       setLoggedInUser(res.data.user);
       setErrorMsg("");
       navigate("/dashboard");
