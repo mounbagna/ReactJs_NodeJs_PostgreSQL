@@ -21,9 +21,11 @@ function Dashboard({ user }) {
     setErrorMsg("");
   };
 
+  const API = process.env.REACT_APP_API_URL || "http://localhost:3005";
+
   const getAllStudents = () => {
     //axios.get("http://localhost:3005/students")
-    axios.get(`${process.env.REACT_APP_API_URL}/students`)
+    axios.get(`${API}/students`)
       .then(res => {
         setStudents(res.data);
         setFilteredStudents(res.data);
@@ -53,10 +55,10 @@ function Dashboard({ user }) {
     try {
       if (studentData.studentId) {
         //await axios.patch(`http://localhost:3005/students/${studentData.studentId}`, studentData);
-        await axios.patch(`${process.env.REACT_APP_API_URL}/students/${studentData.studentId}`, studentData);
+        await axios.patch(`${API}/students/${studentData.studentId}`, studentData);
       } else {
         //await axios.post("http://localhost:3005/students", studentData);
-        await axios.post(`${process.env.REACT_APP_API_URL}/students`, studentData);
+        await axios.post(`${API}/students`, studentData);
       }
       getAllStudents(); 
       closePopup();     
@@ -84,7 +86,7 @@ function Dashboard({ user }) {
     if (!confirmDelete) return;
     try {
       //await axios.delete(`http://localhost:3005/students/${studentId}`);
-      await axios.delete(`${process.env.REACT_APP_API_URL}/students/${studentId}`);
+      await axios.delete(`${API}/students/${studentId}`);
       getAllStudents();
     } catch (err) {
       console.error(err);
