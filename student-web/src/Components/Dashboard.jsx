@@ -21,10 +21,10 @@ function Dashboard({ user }) {
     setErrorMsg("");
   };
 
-  const API = process.env.REACT_APP_API_URL || "http://localhost:3005";
+  const API = import.meta.env.VITE_API_URL;
 
   const getAllStudents = () => {
-    //axios.get("http://localhost:3005/students")
+    
     axios.get(`${API}/students`)
       .then(res => {
         setStudents(res.data);
@@ -54,10 +54,8 @@ function Dashboard({ user }) {
     }
     try {
       if (studentData.studentId) {
-        //await axios.patch(`http://localhost:3005/students/${studentData.studentId}`, studentData);
         await axios.patch(`${API}/students/${studentData.studentId}`, studentData);
       } else {
-        //await axios.post("http://localhost:3005/students", studentData);
         await axios.post(`${API}/students`, studentData);
       }
       getAllStudents(); 
@@ -85,7 +83,6 @@ function Dashboard({ user }) {
     const confirmDelete = window.confirm("Do you really want to delete?");
     if (!confirmDelete) return;
     try {
-      //await axios.delete(`http://localhost:3005/students/${studentId}`);
       await axios.delete(`${API}/students/${studentId}`);
       getAllStudents();
     } catch (err) {

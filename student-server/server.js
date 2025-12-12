@@ -9,8 +9,8 @@ require('dotenv').config();
 
 
 const app = express();
-const port = process.env.PORT || 3005;
-const API = (process.env.REACT_APP_API_URL || "http://localhost:3005").replace(/\/+$/, '');
+const port = process.env.PORT;
+const FRONTEND_URL = process.env.FRONTEND_URL;
 
 // Middleware
 app.use(cors());
@@ -18,16 +18,14 @@ app.use(express.json())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// PostgreSQL pool for Render
+// PostgreSQL pool
+const isProduction = process.env.NODE_ENV === "production";
+
 const pool = new Pool({
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME,
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT,
-  max: 10,
-  ssl: process.env.DB_HOST !== "localhost" ? { rejectUnauthorized: false } : false,
+  connectionString: process.env.DATABASE_URL,
+  ssl: isProduction ? { rejectUnauthorized: false } : false,
 });
+
 
 // Connect to PostgreSQL
 pool.connect((err) => {
@@ -101,7 +99,7 @@ app.post("/register", async(req, res) => {
     const user = result.rows[0];
   
   //send verification email
-  const verificationUrl = `${API}/students/${user.studentId}/verify/${token}`;
+  const verificationUrl = `${FRONTEND_URL}/students/${user.studentId}/verify/${token}`;
   await sendEmail(user.email, "Verification email",`Click to verify: ${verificationUrl}`)
 
   res.status(201).json({message: "Registration successfully. Check your email to verify"})
@@ -122,7 +120,7 @@ app.get("/students/:studentId/verify/:token", async (req, res) => {
       [studentId]
     );
 
-    // ❌ CASE 1: Student does not exist (deleted after 1 min or never existed)
+    //CASE 1: Student does not exist (deleted after 1 min or never existed)
     if (studentResult.rows.length === 0) {
       return res.status(410).json({
         message: "Verification expired or account already deleted."
@@ -136,7 +134,7 @@ app.get("/students/:studentId/verify/:token", async (req, res) => {
     const now = new Date();
     const diffInMinutes = (now - createdAt) / (1000 * 60);
 
-    // ❌ CASE 3: Token expired → delete account
+    //CASE 2: Token expired → delete account
     if (diffInMinutes > 1) {
       await pool.query(
         `DELETE FROM student WHERE "studentId" = $1`,
@@ -147,7 +145,7 @@ app.get("/students/:studentId/verify/:token", async (req, res) => {
       });
     }
 
-    // ✅ CASE 4: SUCCESS
+    // CASE 3: SUCCESS
     await pool.query(
       `UPDATE student SET verified = true, token = NULL WHERE "studentId" = $1`,
       [studentId]
@@ -178,7 +176,7 @@ app.post("/login", async (req, res) => {
   return res.status(200).json({ message: "Login Successfully", user });
 });
 
-// Start server LAST
+// Start server
 app.listen(port, (err) => {
   if (err) throw err;
   console.log(`The server is listening on port ${port}`);

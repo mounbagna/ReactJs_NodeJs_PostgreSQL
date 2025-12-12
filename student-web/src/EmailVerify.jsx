@@ -10,12 +10,11 @@ const EmailVerify = () => {
   const [validUrl, setValidUrl] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const API = (process.env.REACT_APP_API_URL || "http://localhost:3005").replace(/\/+$/, '');
+  const API = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     const verifyEmailUrl = async () => {
       try {
-        //const url = `http://localhost:3005/students/${param.studentId}/verify/${param.token}`;
         const url = `${API}/students/${param.studentId}/verify/${param.token}`;
         const { data } = await axios.get(url);
 
@@ -24,8 +23,6 @@ const EmailVerify = () => {
       } catch (error) {
         console.log(error.response.data);
         setValidUrl(false);
-
-        // Show server message (expired, deleted, invalid token, etc.)
         if (error.response && error.response.data.message) {
           setErrorMessage(error.response.data.message);
         } else {

@@ -9,7 +9,7 @@ function Registration() {
   const [errorMsg, setErrorMsg] = useState("");
   const [successMsg, setSuccessMsg] = useState("");
 
-  const API = (process.env.REACT_APP_API_URL || "http://localhost:3005").replace(/\/+$/, '');
+  const API = import.meta.env.VITE_API_URL;
   
   const handleChange = (e) => {
     setUser({ ...user, [e.target.id]: e.target.value });
@@ -24,7 +24,6 @@ function Registration() {
     }
 
     try {
-      //await axios.post("http://localhost:3005/register", user);
       await axios.post(`${API}/register`, user);
       setSuccessMsg("Successfully registered");
       setUser({ name: "", email: "", password: "" });
